@@ -2,7 +2,7 @@
 
 /**
  * _abs - print absolute value of a number
- * @n will pass the number
+ * @n: will pass the number
  * Return: n the absoulte value
  */
 int _abs(int n)

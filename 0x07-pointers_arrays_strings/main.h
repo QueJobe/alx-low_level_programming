@@ -9,4 +9,6 @@ char *_strstr(char *haystack, char *needle);
 void print_chessboard(char (*a)[8]);
 int _putchar(char c);
 void print_diagsums(int *a, int size);
+int _sqrt_recursion(int n);
+int _sqrt(int num, int base);
 #endif

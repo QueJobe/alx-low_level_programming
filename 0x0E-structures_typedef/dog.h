@@ -25,5 +25,6 @@ void print_dog(struct dog *d);
 int _strlen(char *s);
 char *_strcopy(char *dest, char *src);
 dog_t *new_dog(char *name, float age, char *owner);
+void free_dog(dog_t *d);
 
 #endif /*Header file dog.h*/

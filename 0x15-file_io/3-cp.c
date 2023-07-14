@@ -51,9 +51,9 @@ int main(int argc, char *argv[])
 	{
 		b_write = write(o_to, buf, b_read);
 		if (b_write == -1)
-		{
-			exit_error(99, "Error:Can't write to %s, file_to");
-		}
+			exit_error(99, "Error:Can't write to %s, argv[2]");
+		if (b_read == -1)
+			exit_error(99, "Error:Can't read from %s, argv[1]");
 	}
 	if (close(o_from) == -1)
 		exit_error(100, "Error:Can't close fd %d, 0_from");

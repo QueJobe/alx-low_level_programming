@@ -1,16 +1,40 @@
 #include "main.h"
 
 /**
- * exit_error - function to print error message
- * @code: error code
- * @message: error message to display
+ * c_buffer - function to allocate memory
+ * @filename: file name
+ * Return: buffer with allocate memory
+ */
+
+char *c_buffer(char *filename)
+{
+	char *buffer;
+
+	buffer = malloc(sizeof(char) * 1024);
+	if (buffer == NULL)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", filename);
+		exit(99);
+	}
+	return (buffer);
+}
+
+/**
+ * close_f - function to close files
+ * @fd: file descriptor
  * Return: nothing void
  */
 
-void exit_error(int code, const char *message)
+void close_f(int fd)
 {
-	dprintf(STDERR_FILENO, "%s\n", message);
-	exit(code);
+	int d;
+
+	d = close(fd);
+	if (d == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
+		exit(100);
+	}
 }
 
 /**
@@ -22,44 +46,44 @@ void exit_error(int code, const char *message)
 
 int main(int argc, char *argv[])
 {
-	int b_read, b_write;
-	int o_from;
-	int o_to;
+	int b_read, b_write, o_from, o_to;
 	char *buf;
 
 	if (argc != 3)
 	{
-		exit_error(97, "Usage: cp file_from file_to");
+		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
+		exit(97);
 	}
 
 	o_from = open(argv[1], O_RDONLY);
-	if (o_from == -1)
-	{
-		exit_error(98, "Error: Can't read from file %s, argv[1]");
-	}
 
-	o_to = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0664);
-	if (o_to == -1)
+	o_to = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC | O_APPEND, S_IRUSR | S_IWUSR |
+			S_IRGRP | S_IWGRP | S_IROTH);
+	if (o_to == -1 || o_from == -1)
 	{
-		exit_error(99, "Error: Can't write to %s, argv[2]");
+		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
+		exit(98);
 	}
-	buf = malloc(sizeof(char) * 1024);
-	if (buf == NULL)
-		exit(99);
+	buf = c_buffer(argv[2]);
 
 	while ((b_read = read(o_from, buf, 1024)) > 0)
 	{
 		b_write = write(o_to, buf, b_read);
 		if (b_write == -1)
-			exit_error(99, "Error:Can't write to %s, argv[2]");
-		if (b_read == -1)
-			exit_error(99, "Error:Can't read from %s, argv[1]");
+		{
+			dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
+			free(buf);
+			exit(99);
+		}
 	}
-	if (close(o_from) == -1)
-		exit_error(100, "Error:Can't close fd %d, 0_from");
-
-	if (close(o_to) == -1)
-		exit_error(100, "Error: Can't close fd %d, o_to");
+	if (b_read == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
+		free(buf);
+		exit(98);
+	}
+	close_f(o_from);
+	close_f(o_to);
 
 	return (0);
 }

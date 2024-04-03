@@ -1,3 +1,2 @@
-# Make file
 all:
 	gcc main.c school.c -0 school
